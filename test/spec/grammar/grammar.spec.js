@@ -77,7 +77,8 @@ MAX = 43`);
           entities: {
             entityList: [],
             excluded: []
-          }
+          },
+          options: {}
         });
       });
     });
@@ -103,7 +104,8 @@ MAX = 43`);
           entities: {
             entityList: [],
             excluded: []
-          }
+          },
+          options: {}
         });
       });
     });
@@ -138,7 +140,8 @@ application {
             entities: {
               entityList: [],
               excluded: []
-            }
+            },
+            options: {}
           },
           {
             config: {
@@ -148,7 +151,8 @@ application {
             entities: {
               entityList: [],
               excluded: []
-            }
+            },
+            options: {}
           }
         ]);
       });
@@ -214,6 +218,24 @@ application {
           it('should parse the list', () => {
             expect(application.entities.excluded).to.deep.equal(['A']);
           });
+        });
+      });
+    });
+    context('when having entity options', () => {
+      context('such as DTO', () => {
+        let application;
+
+        before(() => {
+          const content = parseFromContent(`application {
+  config {
+    baseName superApp
+  }
+  dto * with mapstruct
+}`);
+          application = content.applications[0];
+        });
+        it('should parse them', () => {
+          expect(application).not.to.be.undefined;
         });
       });
     });
