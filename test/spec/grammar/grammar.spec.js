@@ -33,6 +33,18 @@ const {
   REQUIRED,
   UNIQUE
 } = require('../../../lib/core/jhipster/validations');
+const {
+  READ_ONLY,
+  NO_FLUENT_METHOD,
+  FILTER,
+  SKIP_SERVER,
+  SKIP_CLIENT,
+  EMBEDDED
+} = require('../../../lib/core/jhipster/unary_options');
+
+const { Options, Values } = require('../../../lib/core/jhipster/binary_options');
+
+const { SEARCH, SERVICE, PAGINATION, DTO, ANGULAR_SUFFIX, MICROSERVICE } = Options;
 
 describe('Grammar tests', () => {
   context('when parsing constants', () => {
@@ -1143,6 +1155,23 @@ entity A {
           });
         });
       });
+      [READ_ONLY, EMBEDDED, SKIP_CLIENT, SKIP_SERVER, FILTER, NO_FLUENT_METHOD].forEach(option => {
+        context(option, () => {
+          let parsedOption;
+
+          before(() => {
+            const content = parseFromContent(`${option} A`);
+            parsedOption = content.options[option];
+          });
+
+          it('should parse it', () => {
+            expect(parsedOption).to.deep.equal({
+              list: ['A'],
+              excluded: []
+            });
+          });
+        });
+      });
     });
     context('being binary', () => {
       context('being clientRootFolder', () => {
@@ -1195,6 +1224,43 @@ entity A {
               excluded: ['A'],
               list: ['*']
             }
+          });
+        });
+      });
+      [SEARCH, SERVICE, PAGINATION, DTO].forEach(option => {
+        context(option, () => {
+          Object.keys(Values[option]).forEach(key => {
+            let parsedOption;
+
+            before(() => {
+              const value = Values[option][key];
+              const content = parseFromContent(`${option === PAGINATION ? 'paginate' : option} A with ${value}`);
+              parsedOption = content.options[option][value];
+            });
+
+            it('should parse it', () => {
+              expect(parsedOption).to.deep.equal({
+                list: ['A'],
+                excluded: []
+              });
+            });
+          });
+        });
+      });
+      [MICROSERVICE, ANGULAR_SUFFIX].forEach(option => {
+        context(option, () => {
+          let parsedOption;
+
+          before(() => {
+            const content = parseFromContent(`${option} A with toto`);
+            parsedOption = content.options[option].toto;
+          });
+
+          it('should parse it', () => {
+            expect(parsedOption).to.deep.equal({
+              list: ['A'],
+              excluded: []
+            });
           });
         });
       });
